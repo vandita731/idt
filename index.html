@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piezoelectric Circuit Builder & Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Frosted Glass Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h1 class="app-title">Piezoelectric Circuit Builder</h1>
+            </div>
+            <div class="header-center">
+                <nav class="tab-navigation">
+                    <button class="tab-btn active ripple" data-tab="circuit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 1v6m0 14v-6m11-5h-6M1 12h6" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Circuit
+                    </button>
+                    <button class="tab-btn ripple" data-tab="analytics">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 3v18h18" stroke="currentColor" stroke-width="2"/>
+                            <path d="M18 17l-4-4-4 4-4-4" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Analytics
+                    </button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="theme-toggle">
+                    <input type="checkbox" id="themeToggle" class="theme-checkbox">
+                    <label for="themeToggle" class="theme-label ripple">
+                        <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </label>
+                </div>
+                <div class="header-controls">
+                    <button id="clearCircuit" class="btn btn--secondary btn--sm ripple">Clear</button>
+                    <button id="loadTemplate" class="btn btn--secondary btn--sm ripple">Template</button>
+                    <button id="startSimulation" class="btn btn--primary btn--sm ripple">Simulate</button>
+                    <button id="stopSimulation" class="btn btn--outline btn--sm ripple hidden">Stop</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Circuit Tab Content -->
+            <div id="circuit-tab" class="tab-content active">
+                <!-- Component Library Drawer -->
+                <aside class="component-drawer open" id="componentDrawer">
+                    <div class="drawer-header">
+                        <h3>Component Library</h3>
+                        <button class="drawer-toggle ripple" id="drawerToggle">
+                            <svg class="drawer-open-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <svg class="drawer-closed-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="drawer-content">
+                        <!-- Piezoelectric Tiles -->
+                        <div class="component-category card">
+                            <h4>Piezoelectric Tiles</h4>
+                            <div class="component-grid">
+                                <div class="component-item ripple" data-type="piezo_single" data-tooltip="Single piezoelectric tile - Generates 15V/2mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+                                        </svg>
+                                    </div>
+                                    <span>Single Tile<br><small>15V/2mA</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="piezo_series" data-tooltip="Series piezoelectric tiles - Generates 30V/2mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+                                            <path d="M16 5L6 17h9l-1 8 10-12h-9l1-8z" fill="currentColor" opacity="0.6"/>
+                                        </svg>
+                                    </div>
+                                    <span>Series Tiles<br><small>30V/2mA</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="piezo_parallel" data-tooltip="Parallel piezoelectric tiles - Generates 15V/4mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M10 2L0 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+                                            <path d="M22 2L12 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+                                        </svg>
+                                    </div>
+                                    <span>Parallel Tiles<br><small>15V/4mA</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="piezo_quad" data-tooltip="2x2 Piezo array - Generates 30V/4mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 1L1 10h6l-1 6 7-9h-6l1-6z" fill="currentColor"/>
+                                            <path d="M18 1L11 10h6l-1 6 7-9h-6l1-6z" fill="currentColor"/>
+                                            <path d="M8 15L1 24h6l-1 6 7-9h-6l1-6z" fill="currentColor"/>
+                                            <path d="M18 15L11 24h6l-1 6 7-9h-6l1-6z" fill="currentColor"/>
+                                        </svg>
+                                    </div>
+                                    <span>2x2 Array<br><small>30V/4mA</small></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rectification -->
+                        <div class="component-category card">
+                            <h4>Rectification</h4>
+                            <div class="component-grid">
+                                <div class="component-item ripple" data-type="diode" data-tooltip="Standard diode - 0.7V forward drop">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M14 6l6 6-6 6V6z" fill="currentColor"/>
+                                            <path d="M4 12h16" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M20 8v8" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>Diode<br><small>0.7V drop</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="bridge_rectifier" data-tooltip="Bridge rectifier - Converts AC to DC">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 4l8 8-8 8-8-8 8-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                            <path d="M8 8l8 8m0-8l-8 8" stroke="currentColor" stroke-width="1"/>
+                                        </svg>
+                                    </div>
+                                    <span>Bridge Rect.<br><small>1.4V drop</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="schottky_diode" data-tooltip="Schottky diode - 0.3V forward drop">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M14 6l6 6-6 6V6z" fill="currentColor"/>
+                                            <path d="M4 12h16" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M20 6v4m0 4v4" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>Schottky<br><small>0.3V drop</small></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Energy Storage -->
+                        <div class="component-category card">
+                            <h4>Energy Storage</h4>
+                            <div class="component-grid">
+                                <div class="component-item ripple" data-type="capacitor_100uf" data-tooltip="100µF Capacitor - Small energy storage">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 4v16m8-16v16" stroke="currentColor" stroke-width="3"/>
+                                            <path d="M4 12h4m8 0h4" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>100µF Cap<br><small>16V</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="capacitor_1mf" data-tooltip="1mF Capacitor - Medium energy storage">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 4v16m8-16v16" stroke="currentColor" stroke-width="3"/>
+                                            <path d="M4 12h4m8 0h4" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>1mF Cap<br><small>25V</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="capacitor_10mf" data-tooltip="10mF Capacitor - Large energy storage">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 4v16m8-16v16" stroke="currentColor" stroke-width="3"/>
+                                            <path d="M4 12h4m8 0h4" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>10mF Cap<br><small>16V</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="battery_liion" data-tooltip="Li-ion Battery - 3.7V, 2000mAh">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect x="6" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M12 9v6m-3-3h6" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M10 4h4" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>Li-ion<br><small>3.7V</small></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Voltage Regulators & Loads -->
+                        <div class="component-category card">
+                            <h4>Regulators & Loads</h4>
+                            <div class="component-grid">
+                                <div class="component-item ripple" data-type="lm7805" data-tooltip="LM7805 - Linear 5V regulator">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect x="4" y="8" width="16" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                                            <text x="12" y="14" text-anchor="middle" fill="currentColor" font-size="8">7805</text>
+                                        </svg>
+                                    </div>
+                                    <span>LM7805<br><small>5V Reg</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="ltc3588" data-tooltip="LTC3588 - Energy harvesting regulator">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect x="4" y="8" width="16" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                                            <text x="12" y="14" text-anchor="middle" fill="currentColor" font-size="7">3588</text>
+                                        </svg>
+                                    </div>
+                                    <span>LTC3588<br><small>3.3V Reg</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="led_red" data-tooltip="Red LED - 2V, 20mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M12 8v8m-4-4h8" stroke="currentColor" stroke-width="1"/>
+                                        </svg>
+                                    </div>
+                                    <span>Red LED<br><small>2V/20mA</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="led_white" data-tooltip="White LED - 3.3V, 20mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M12 8v8m-4-4h8" stroke="currentColor" stroke-width="1"/>
+                                        </svg>
+                                    </div>
+                                    <span>White LED<br><small>3.3V/20mA</small></span>
+                                </div>
+                                <div class="component-item ripple" data-type="usb_port" data-tooltip="USB Port - 5V, 500mA">
+                                    <div class="component-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect x="6" y="9" width="12" height="6" rx="1" stroke="currentColor" stroke-width="2"/>
+                                            <text x="12" y="13" text-anchor="middle" fill="currentColor" font-size="7">USB</text>
+                                        </svg>
+                                    </div>
+                                    <span>USB Port<br><small>5V/500mA</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Circuit Canvas -->
+                <section class="circuit-workspace">
+                    <div class="workspace-header">
+                        <div class="workspace-controls">
+                            <button id="wireToggle" class="btn btn--secondary btn--sm ripple">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M4 12h16" stroke="currentColor" stroke-width="3"/>
+                                </svg>
+                                Wire Mode
+                            </button>
+                            <div class="control-group">
+                                <label>Pressure:</label>
+                                <input type="range" id="pressureSlider" min="20" max="200" value="100" step="10">
+                                <span id="pressureValue">100N</span>
+                            </div>
+                            <div class="control-group">
+                                <label>Frequency:</label>
+                                <input type="range" id="frequencySlider" min="0.5" max="3" value="1" step="0.1">
+                                <span id="frequencyValue">1.0Hz</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="canvas-container">
+                        <canvas id="circuitCanvas" width="1200" height="800"></canvas>
+                        <div class="canvas-overlay">
+                            <div id="wireMode" class="wire-indicator hidden">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                </svg>
+                                Wire Mode: Click connection points to create wires
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="simulation-controls card">
+                        <button id="manualStep" class="btn btn--secondary ripple">Manual Step</button>
+                        <button id="autoStep" class="btn btn--secondary ripple">Auto Step</button>
+                        <button id="stopAuto" class="btn btn--outline ripple hidden">Stop Auto</button>
+                    </div>
+                </section>
+
+                <!-- Properties Panel -->
+                <aside class="properties-panel card">
+                    <div class="panel-header">
+                        <h3>Circuit Analysis</h3>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <!-- Measurements -->
+                        <div class="measurement-section">
+                            <h4>Real-time Measurements</h4>
+                            <div class="measurement-grid">
+                                <div class="measurement-card">
+                                    <label>Piezo Voltage</label>
+                                    <span id="piezoVoltage" class="measurement-value">0.0V</span>
+                                </div>
+                                <div class="measurement-card">
+                                    <label>Rectifier Output</label>
+                                    <span id="rectifierVoltage" class="measurement-value">0.0V</span>
+                                </div>
+                                <div class="measurement-card">
+                                    <label>Storage Voltage</label>
+                                    <span id="storageVoltage" class="measurement-value">0.0V</span>
+                                </div>
+                                <div class="measurement-card">
+                                    <label>Load Current</label>
+                                    <span id="loadCurrent" class="measurement-value">0.0mA</span>
+                                </div>
+                                <div class="measurement-card">
+                                    <label>Power Generated</label>
+                                    <span id="powerGenerated" class="measurement-value">0.0mW</span>
+                                </div>
+                                <div class="measurement-card">
+                                    <label>Energy Stored</label>
+                                    <span id="energyStored" class="measurement-value">0.0mJ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Component Info -->
+                        <div class="component-info">
+                            <h4>Selected Component</h4>
+                            <div id="componentDetails" class="component-details">
+                                <p>Click a component to view details</p>
+                            </div>
+                        </div>
+
+                        <!-- Circuit Status -->
+                        <div class="circuit-status">
+                            <h4>Circuit Status</h4>
+                            <div id="circuitMessages" class="status-messages">
+                                <div class="status-message status--info">
+                                    Drag components from library - Use Wire Mode to connect them
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Analytics Tab Content -->
+            <div id="analytics-tab" class="tab-content">
+                <div class="analytics-container">
+                    <div class="analytics-header">
+                        <h2>Energy Harvesting Analytics Dashboard</h2>
+                        <p>Comprehensive data analysis and insights for piezoelectric energy systems</p>
+                        <div class="analytics-controls">
+                            <button id="exportAll" class="btn btn--primary ripple">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                    <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Export All Data
+                            </button>
+                            <div class="filter-controls">
+                                <select id="locationFilter" class="form-control">
+                                    <option value="all">All Locations</option>
+                                    <option value="residential">Residential</option>
+                                    <option value="office">Office Building</option>
+                                    <option value="mall">Shopping Mall</option>
+                                    <option value="station">Train Station</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid">
+                        <!-- Peak Traffic Chart -->
+                        <div class="chart-card card">
+                            <div class="chart-header">
+                                <h3>Peak Pedestrian Traffic Hours</h3>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn ripple" data-action="export" data-chart="traffic">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-content" style="height: 300px; position: relative;">
+                                <canvas id="trafficChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Energy Per Footstep Chart -->
+                        <div class="chart-card card">
+                            <div class="chart-header">
+                                <h3>Energy Generated Per Footstep</h3>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn ripple" data-action="export" data-chart="footstep">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-content" style="height: 300px; position: relative;">
+                                <canvas id="footstepChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Battery Charging Times -->
+                        <div class="chart-card card">
+                            <div class="chart-header">
+                                <h3>Device Charging Times</h3>
+                                <div class="chart-actions">
+                                    <select id="trafficScenario" class="form-control">
+                                        <option value="single_walker">Single Walker</option>
+                                        <option value="moderate_traffic">Moderate Traffic</option>
+                                        <option value="high_traffic">High Traffic</option>
+                                    </select>
+                                    <button class="chart-action-btn ripple" data-action="export" data-chart="charging">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-content" style="height: 300px; position: relative;">
+                                <canvas id="chargingChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Energy Generation Potential -->
+                        <div class="chart-card card">
+                            <div class="chart-header">
+                                <h3>Daily Energy Generation Potential</h3>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn ripple" data-action="export" data-chart="potential">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-content" style="height: 300px; position: relative;">
+                                <canvas id="potentialChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Efficiency Breakdown -->
+                        <div class="chart-card card">
+                            <div class="chart-header">
+                                <h3>System Efficiency Breakdown</h3>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn ripple" data-action="export" data-chart="efficiency">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-content" style="height: 300px; position: relative;">
+                                <canvas id="efficiencyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Technology Comparison -->
+                        <div class="chart-card card">
+                            <div class="chart-header">
+                                <h3>Technology Comparison</h3>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn ripple" data-action="export" data-chart="comparison">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-content" style="height: 300px; position: relative;">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Calculator -->
+                    <div class="calculator-section card">
+                        <div class="calculator-header">
+                            <h3>Energy Calculator</h3>
+                            <p>Calculate energy generation for custom scenarios</p>
+                        </div>
+                        <div class="calculator-content">
+                            <div class="calculator-inputs">
+                                <div class="input-group">
+                                    <label>Person Weight (kg)</label>
+                                    <input type="number" id="calcWeight" value="70" min="30" max="150" class="form-control">
+                                </div>
+                                <div class="input-group">
+                                    <label>Steps per Day</label>
+                                    <input type="number" id="calcSteps" value="5000" min="1000" max="20000" class="form-control">
+                                </div>
+                                <div class="input-group">
+                                    <label>Walking Speed</label>
+                                    <select id="calcSpeed" class="form-control">
+                                        <option value="slow">Slow (2 mph)</option>
+                                        <option value="normal" selected>Normal (3.5 mph)</option>
+                                        <option value="fast">Fast (5 mph)</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Number of Tiles</label>
+                                    <input type="number" id="calcTiles" value="10" min="1" max="1000" class="form-control">
+                                </div>
+                            </div>
+                            <div class="calculator-results">
+                                <div class="result-item">
+                                    <label>Energy per Step</label>
+                                    <span id="energyPerStep">3.5 J</span>
+                                </div>
+                                <div class="result-item">
+                                    <label>Daily Energy Generation</label>
+                                    <span id="dailyEnergy">4.86 kWh</span>
+                                </div>
+                                <div class="result-item">
+                                    <label>Devices Powered</label>
+                                    <span id="devicesPowered">243 LED lights</span>
+                                </div>
+                                <div class="result-item">
+                                    <label>CO2 Savings</label>
+                                    <span id="co2Savings">2.19 kg/day</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Summary Table -->
+                    <div class="data-table-section card">
+                        <div class="table-header">
+                            <h3>Installation Case Studies</h3>
+                            <div class="table-actions">
+                                <button id="exportTable" class="btn btn--secondary ripple">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
+                                        <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+                                        <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
+                                        <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
+                                        <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                    Export CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="caseStudyTable" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th>Tiles</th>
+                                        <th>Daily Energy (kWh)</th>
+                                        <th>Installation Cost</th>
+                                        <th>ROI (Years)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <tr>
+                                        <td>Bird Street, London</td>
+                                        <td>12</td>
+                                        <td>2.5</td>
+                                        <td>$50,000</td>
+                                        <td>8</td>
+                                        <td><span class="status status--success">Operational</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Generic University</td>
+                                        <td>50</td>
+                                        <td>15.0</td>
+                                        <td>$200,000</td>
+                                        <td>10</td>
+                                        <td><span class="status status--success">Operational</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mall Walkway</td>
+                                        <td>100</td>
+                                        <td>40.0</td>
+                                        <td>$350,000</td>
+                                        <td>7</td>
+                                        <td><span class="status status--warning">Planning</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Metro Station</td>
+                                        <td>200</td>
+                                        <td>120.0</td>
+                                        <td>$600,000</td>
+                                        <td>6</td>
+                                        <td><span class="status status--info">Proposed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Template Modal -->
+        <div id="templateModal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h3>Load Circuit Template</h3>
+                    <button class="modal-close ripple">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="template-grid">
+                        <div class="template-item card ripple" data-template="basic_harvester">
+                            <div class="template-preview">
+                                <svg width="100" height="60" viewBox="0 0 200 120">
+                                    <rect x="20" y="40" width="30" height="20" fill="var(--primary)" rx="2"/>
+                                    <path d="M35 45L35 55" stroke="var(--text-primary)" stroke-width="2"/>
+                                    <rect x="70" y="30" width="25" height="25" fill="var(--text-secondary)" rx="2"/>
+                                    <rect x="115" y="35" width="25" height="15" fill="var(--accent)" rx="2"/>
+                                    <circle cx="165" cy="50" r="8" fill="var(--error)"/>
+                                    <path d="M50 50h20m25 0h20m25 0h20" stroke="var(--info)" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <h4>Basic Harvester</h4>
+                            <p>Simple energy harvesting circuit with piezo → bridge → capacitor → LED</p>
+                        </div>
+                        <div class="template-item card ripple" data-template="regulated_system">
+                            <div class="template-preview">
+                                <svg width="100" height="60" viewBox="0 0 250 120">
+                                    <rect x="20" y="40" width="35" height="20" fill="var(--primary)" rx="2"/>
+                                    <path d="M38 45L38 55" stroke="var(--text-primary)" stroke-width="2"/>
+                                    <rect x="75" y="30" width="25" height="25" fill="var(--text-secondary)" rx="2"/>
+                                    <rect x="120" y="35" width="25" height="15" fill="var(--accent)" rx="2"/>
+                                    <rect x="165" y="30" width="30" height="25" fill="var(--warning)" rx="2"/>
+                                    <rect x="215" y="35" width="20" height="15" fill="var(--success)" rx="2"/>
+                                    <path d="M55 50h20m25 0h20m25 0h20m30 0h20" stroke="var(--info)" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <h4>Regulated System</h4>
+                            <p>Advanced system with voltage regulation for consistent power output</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip -->
+        <div id="tooltip" class="tooltip hidden"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
